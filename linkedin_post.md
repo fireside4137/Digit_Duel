@@ -50,7 +50,7 @@ There was one more catch: user-drawn digits usually perform terribly on MNIST mo
 
 You can draw a digit on the canvas, upload a photo, or turn on "Duel Mode" to watch both networks compete in real time.
 
-Live demo: [Insert your Vercel link here once deployed]  
+Live demo: https://digitduel-web.vercel.app/  
 GitHub repo: https://github.com/fireside4137/Digit_Duel  
 
 Curious for those who've trained models from scratch — what’s the subtlest silent bug you’ve ever had to hunt down in a training loop?

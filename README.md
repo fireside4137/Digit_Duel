@@ -1,6 +1,7 @@
 # Digit Duel ⚔️ : CNN vs RNN on MNIST
 
 [![CI](https://github.com/fireside4137/Digit_Duel/actions/workflows/ci.yml/badge.svg)](https://github.com/fireside4137/Digit_Duel/actions)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-digitduel--web.vercel.app-10b981.svg?logo=vercel)](https://digitduel-web.vercel.app/)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-ee4c2c.svg)](https://pytorch.org/)
 [![ONNX](https://img.shields.io/badge/ONNX-WebAssembly-005ced.svg)](https://onnxruntime.ai/)
@@ -15,7 +16,7 @@ Deployed with **zero cold-starts and zero server costs** using **ONNX Runtime We
 
 ## 🚀 Live Demo & Web App
 
-- **Live URL**: Deployable on Vercel or GitHub Pages in 1 click.
+- **Live URL**: [https://digitduel-web.vercel.app/](https://digitduel-web.vercel.app/)
 - **Key Features**:
   - ✍️ **Interactive Drawing Pad**: Draw any digit $0$ through $9$ with responsive touch and mouse support.
   - 📁 **Image Uploader**: Drag and drop any handwritten digit photo or screenshot.
@@ -182,7 +183,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 2. Go to [Vercel](https://vercel.com/) and click **"Add New Project"**.
 3. Import `Digit_Duel`.
 4. Click **Deploy** (the included `vercel.json` automatically routes traffic to `web/index.html`).
-5. Your live app is now online with $100\%$ uptime and zero cold-starts!
+5. Your live app is now online at [https://digitduel-web.vercel.app/](https://digitduel-web.vercel.app/) with 100% uptime and zero cold-starts!
 
 ---
 
