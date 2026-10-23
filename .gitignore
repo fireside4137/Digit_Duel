@@ -1,0 +1,28 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Caches and environments
+.venv/
+env/
+venv/
+ENV/
+.env
+.ipynb_checkpoints/
+.DS_Store
+
+# Data files (keep raw MNIST data local to avoid git repo bloat)
+data/
+data/MNIST/
+data/MNIST/raw/
+
+# Temporary run artifacts & logs
+*.log
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Large binaries (allow .onnx models in checkpoints/ and web/)
+!checkpoints/*.onnx
+!web/models/*.onnx

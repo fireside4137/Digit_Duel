@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digit Duel ⚔️ | CNN vs RNN on MNIST</title>
+  <meta name="description" content="Interactive handwritten digit recognition running 100% in your browser with ONNX Runtime Web. Zero cold starts, zero latency." />
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <!-- ONNX Runtime Web CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="badge-row">
+        <span class="pill pill-green">● 100% Browser Inference</span>
+        <span class="pill pill-blue">Zero Cold Starts</span>
+        <span class="pill pill-purple">PyTorch → ONNX</span>
+      </div>
+      <h1 class="title">Digit Duel <span class="accent">⚔️</span></h1>
+      <p class="subtitle">
+        Spatial CNN vs Sequential RNN on handwritten MNIST digits. Draw or upload a digit to test real-time predictions with zero server latency.
+      </p>
+
+      <!-- Model Switcher -->
+      <div class="model-toggle-wrapper">
+        <div class="toggle-group" id="modelToggleGroup">
+          <button class="toggle-btn active" data-model="cnn">
+            <span class="btn-icon">🧠</span>
+            <span class="btn-text"><strong>CNN</strong> (99.25% Acc)</span>
+          </button>
+          <button class="toggle-btn" data-model="rnn">
+            <span class="btn-icon">🔄</span>
+            <span class="btn-text"><strong>RNN</strong> (97.00% Acc)</span>
+          </button>
+          <button class="toggle-btn" data-model="duel">
+            <span class="btn-icon">⚔️</span>
+            <span class="btn-text"><strong>Duel Mode</strong> (Both)</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Grid -->
+    <main class="main-grid">
+      <!-- Input Panel -->
+      <section class="card input-card">
+        <div class="card-header">
+          <div class="tabs">
+            <button class="tab-btn active" id="drawTabBtn">✍️ Draw Digit</button>
+            <button class="tab-btn" id="uploadTabBtn">📁 Upload Image</button>
+          </div>
+        </div>
+
+        <!-- Draw Mode -->
+        <div class="tab-content" id="drawSection">
+          <div class="canvas-wrapper">
+            <canvas id="paintCanvas" width="280" height="280"></canvas>
+            <div class="canvas-hint" id="canvasHint">Draw any digit (0–9) here</div>
+          </div>
+          <div class="canvas-controls">
+            <div class="brush-size-control">
+              <label for="brushSize">Brush:</label>
+              <input type="range" id="brushSize" min="12" max="32" value="20" />
+            </div>
+            <button class="action-btn secondary" id="clearBtn" title="Clear canvas">🧹 Clear</button>
+            <button class="action-btn secondary" id="undoBtn" title="Undo stroke">↩ Undo</button>
+          </div>
+        </div>
+
+        <!-- Upload Mode -->
+        <div class="tab-content hidden" id="uploadSection">
+          <div class="upload-dropzone" id="dropzone">
+            <input type="file" id="fileInput" accept="image/*" class="file-input-hidden" />
+            <div class="dropzone-inner">
+              <span class="upload-icon">📤</span>
+              <p class="dropzone-text"><strong>Click to upload</strong> or drag and drop</p>
+              <p class="dropzone-sub">PNG, JPG, or WEBP (crop to digit)</p>
+            </div>
+          </div>
+          <div class="upload-preview-wrapper hidden" id="uploadPreviewWrapper">
+            <img id="uploadPreviewImg" alt="Upload Preview" />
+            <button class="action-btn secondary" id="removeUploadBtn">Remove Image</button>
+          </div>
+        </div>
+
+        <!-- Preprocessing Insight -->
+        <div class="preprocessed-insight">
+          <div class="insight-label">
+            <span>Center-of-Mass Preprocessed (28×28):</span>
+            <span class="tooltip-trigger" title="Yann LeCun's center-of-mass centering algorithm centers the digit in a 20x20 box inside a 28x28 grid, exactly matching MNIST training data.">ℹ️</span>
+          </div>
+          <canvas id="previewCanvas" width="28" height="28" class="preview-canvas"></canvas>
+        </div>
+      </section>
+
+      <!-- Output Panel -->
+      <section class="card output-card">
+        <div class="card-header">
+          <h2 class="card-title">Real-Time Classification</h2>
+          <span class="latency-tag" id="latencyTag">⚡ Ready</span>
+        </div>
+
+        <!-- Duel Output Container -->
+        <div id="duelContainer" class="duel-container hidden">
+          <div class="duel-box cnn-duel">
+            <span class="duel-label">CNN Prediction</span>
+            <div class="duel-hero-digit" id="duelCnnDigit">-</div>
+            <div class="duel-conf" id="duelCnnConf">0.0%</div>
+          </div>
+          <div class="duel-divider">VS</div>
+          <div class="duel-box rnn-duel">
+            <span class="duel-label">RNN Prediction</span>
+            <div class="duel-hero-digit" id="duelRnnDigit">-</div>
+            <div class="duel-conf" id="duelRnnConf">0.0%</div>
+          </div>
+        </div>
+
+        <!-- Single Model Hero Display -->
+        <div class="prediction-hero" id="singleHero">
+          <div class="hero-left">
+            <span class="hero-sub" id="activeModelLabel">CNN Prediction</span>
+            <div class="hero-digit" id="topDigit">-</div>
+          </div>
+          <div class="hero-right">
+            <span class="hero-sub">Confidence</span>
+            <div class="hero-confidence" id="topConfidence">0.0%</div>
+          </div>
+        </div>
+
+        <!-- Probability Distribution Bar Chart -->
+        <div class="chart-container">
+          <h3 class="chart-title">Class Probabilities (0 – 9)</h3>
+          <div class="bars-wrapper" id="barsWrapper">
+            <!-- Dynamically populated 0-9 bars -->
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Technical Story Section -->
+    <section class="story-section card">
+      <h2 class="story-title">🔬 Engineering Story: CNN vs RNN on MNIST</h2>
+      <div class="story-grid">
+        <div class="story-card">
+          <h3>The Silent Bug in RNN</h3>
+          <p>
+            When training the 2-layer RNN, accuracy initially stagnated at <strong>84.7%</strong> with loss refusing to drop below 1.53. The root cause was an accidental <code>torch.sigmoid()</code> applied to the logits right before <code>CrossEntropyLoss</code>. Because PyTorch's cross-entropy loss already applies <code>log_softmax</code>, sigmoiding the logits severely restricted gradients. Removing that single line instantly unlocked proper convergence: loss plummeted to <strong>0.108</strong> and accuracy leaped to <strong>97.0%</strong>!
+          </p>
+        </div>
+        <div class="story-card">
+          <h3>Why Center-of-Mass Centering Matters</h3>
+          <p>
+            If you feed a naive 28×28 resize of a user's drawing to MNIST models, accuracy plummets to ~40%. Real MNIST digits are tightly bounded in a 20×20 box, scaled by aspect ratio, and translated so their <strong>center of mass</strong> sits exactly at pixel (13.5, 13.5). This web app implements that exact algorithm on the fly.
+          </p>
+        </div>
+        <div class="story-card">
+          <h3>Zero-Sleep Deployment with ONNX</h3>
+          <p>
+            Instead of hosting heavy Python servers on Streamlit or Render that go to sleep after minutes of inactivity, we exported the PyTorch weights to an optimized <strong>1.5 MB ONNX model</strong>. Inference runs natively inside your browser's WebAssembly engine in <strong>~3 milliseconds</strong>.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>
+        Crafted by <a href="https://github.com/fireside4137" target="_blank" rel="noreferrer">fireside4137</a> • 
+        <a href="https://github.com/fireside4137/Digit_Duel" target="_blank" rel="noreferrer">GitHub Repository</a>
+      </p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
