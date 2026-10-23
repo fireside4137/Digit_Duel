@@ -5,7 +5,7 @@
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-ee4c2c.svg)](https://pytorch.org/)
 [![ONNX](https://img.shields.io/badge/ONNX-WebAssembly-005ced.svg)](https://onnxruntime.ai/)
-[![Deployment](https://img.shields.io/badge/Vercel-Zero--Sleep-black.svg)](https://digitduel-web.vercel.app/)
+[![Deployment](https://img.shields.io/badge/Vercel-Zero--Sleep-black.svg)](https://vercel.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 An end-to-end deep learning project comparing spatial feature extraction (**Convolutional Neural Network**) against sequential row-by-row processing (**Recurrent Neural Network**) on handwritten MNIST digits.
